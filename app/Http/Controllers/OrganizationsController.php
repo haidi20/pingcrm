@@ -12,22 +12,25 @@ class OrganizationsController extends Controller
 {
     public function index()
     {
+        $organizations = Auth::user()->account->organizations()
+                            ->orderBy('name')
+                            ->filter(Request::only('search'))
+                            ->paginate(10)
+                            ->withQueryString()
+                            // ->toArray();
+                            ->through(function ($organization) {
+                                return [
+                                    'id' => $organization->id,
+                                    'name' => $organization->name,
+                                    'phone' => $organization->phone,
+                                    'city' => $organization->city,
+                                    'deleted_at' => $organization->deleted_at,
+                                ];
+                            });
+
         return Inertia::render('Organizations/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'organizations' => Auth::user()->account->organizations()
-                ->orderBy('name')
-                ->filter(Request::only('search', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(function ($organization) {
-                    return [
-                        'id' => $organization->id,
-                        'name' => $organization->name,
-                        'phone' => $organization->phone,
-                        'city' => $organization->city,
-                        'deleted_at' => $organization->deleted_at,
-                    ];
-                }),
+            'filters' => Request::all('search'),
+            'organizations' => $organizations,
         ]);
     }
 

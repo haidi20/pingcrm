@@ -15,6 +15,7 @@
         </div>
         <div class="px-10 py-4 bg-gray-100 border-t border-gray-100 flex">
           <loading-button :loading="form.processing" class="ml-auto btn-indigo" type="submit">Login</loading-button>
+          {{form.processing ? 1 : 0}}
         </div>
       </form>
     </div>
